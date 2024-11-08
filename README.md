@@ -7,7 +7,8 @@ This project includes the following files:
 - **main.cpp**: Contains the main game logic, including movement, scoring, and collision detection.
 - **CarG.h**: The header file defining the `CarG` class and its methods, including multithreaded functionality.
 - **CarG.exe**: The compiled executable for running the game.
-
+- **123.wav**
+- **all.wav**
 ## Features
 - **Player-Controlled Car**: Navigate left and right on the road to avoid obstacles.
 - **Enemy Cars and Cash Collection**: Dodge enemy cars and collect cash symbols (`$`) for points.
