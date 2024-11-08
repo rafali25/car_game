@@ -27,9 +27,4 @@ void music() {
     PlaySound(TEXT("123.wav"), NULL, SND_SYNC);
     PlaySound(TEXT("all.wav"), NULL, SND_SYNC);
 }
-std::thread t1(music);
-t1.detach();
-License
-This project is open-source and contributions are welcome!
 
-This `README.md` provides an organized overview of the Car Game, including setup instructions, gameplay features, the multithreading aspect for background music, and ideas for future enhancements. Let me know if you want any additional details!
