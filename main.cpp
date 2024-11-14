@@ -3,199 +3,188 @@
 #include <ctime>
 #include <windows.h>
 #include "carG.h"
-#define CC (x1==n && i==21) || (x1==n && i==22) || (x1==n && i==23) || (x1==n+1 && i==21) || (x1==n+1 && i==22) || (x1==n+1 && i==23) || (x1==n+2 && i==21) || (x1==n+2 && i==22) || (x1==n+2 && i==23) || (x1==n+3 && i==21) || (x1==n+3 && i==22) || (x1==n+3 && i==23) || (x1==n+4 && i==21) || (x1==n+4 && i==22) || (x1==n+4 && i==23)
+
+#define COLLISION_CHECK (carPosX == playerPos && frameRow == 21) || (carPosX == playerPos && frameRow == 22) || (carPosX == playerPos && frameRow == 23) || \
+                         (carPosX + 1 == playerPos && frameRow == 21) || (carPosX + 1 == playerPos && frameRow == 22) || (carPosX + 1 == playerPos && frameRow == 23) || \
+                         (carPosX + 2 == playerPos && frameRow == 21) || (carPosX + 2 == playerPos && frameRow == 22) || (carPosX + 2 == playerPos && frameRow == 23) || \
+                         (carPosX + 3 == playerPos && frameRow == 21) || (carPosX + 3 == playerPos && frameRow == 22) || (carPosX + 3 == playerPos && frameRow == 23) || \
+                         (carPosX + 4 == playerPos && frameRow == 21) || (carPosX + 4 == playerPos && frameRow == 22) || (carPosX + 4 == playerPos && frameRow == 23)
 
 using namespace std;
 
-COORD coord={0,0};
- void CarG::gotoxy(int x,int y)
- {
-    coord.X=x;
-    coord.Y=y;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
- }
+COORD consoleCoord = {0, 0};
 
-CarG::CarG()
-{
+void CarG::setCursorPosition(int x, int y) {
+    consoleCoord.X = x;
+    consoleCoord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), consoleCoord);
+}
+
+CarG::CarG() {
     srand(time(0));
-    cash = '$';
-    n=27;
-    points=0;
-    n1=0;
-    sleep=150;
+    cashSymbol = '$';
+    playerPos = 27;
+    score = 0;
+    enemySpeed = 150;
 }
 
- void CarG::frame()
- {
-     for(int j=1;j<=3;j+=2)
-     for(int i=0;i<=24;i++)
-     {
-         gotoxy(16*j,i);
-         cout << char (178);
-     }
- }
+void CarG::drawFrame() {
+    for (int j = 1; j <= 3; j += 2)
+        for (int i = 0; i <= 24; i++) {
+            setCursorPosition(16 * j, i);
+            cout << char(178);
+        }
+}
 
-void CarG::car(int r)
- {
-
-    n=n+r;
-    gotoxy(n,22);
+void CarG::drawCar(int shift) {
+    playerPos += shift;
+    setCursorPosition(playerPos, 22);
     cout << "@   @";
-    gotoxy(n,23);
+    setCursorPosition(playerPos, 23);
     cout << "| X |";
-    gotoxy(n,24);
+    setCursorPosition(playerPos, 24);
     cout << "@   @";
- }
-
-void CarG::cls()
- {
-
-    gotoxy(n,22);
-    cout << "     ";
-    gotoxy(n,23);
-    cout << "     ";
-    gotoxy(n,24);
-    cout << "     ";
- }
-
-void CarG::Ecar(int r, int x2)
-{
-    gotoxy(x2,r);
-    cout << char(219) << "  " << char(219) ;
-    gotoxy(x2,1+r);
-    cout << char(219) << char(219) << char(219) << char(219) ;
-    gotoxy(x2,2+r);
-    cout << char(219) << "  " << char(219) ;
 }
 
-void CarG::Ecls(int r, int x2)
-{
-    gotoxy(x2,r);
-    cout << "    ";
-    gotoxy(x2,r+1);
-    cout << "    ";
-    gotoxy(x2,r+2);
-    cout << "    ";
+void CarG::clearCar() {
+    setCursorPosition(playerPos, 22);
+    cout << "     ";
+    setCursorPosition(playerPos, 23);
+    cout << "     ";
+    setCursorPosition(playerPos, 24);
+    cout << "     ";
 }
 
-void CarG::movement(char keyp)
-{
-    switch(keyp)
-    {
+void CarG::drawEnemyCar(int row, int enemyPos) {
+    setCursorPosition(enemyPos, row);
+    cout << char(219) << "  " << char(219);
+    setCursorPosition(enemyPos, row + 1);
+    cout << char(219) << char(219) << char(219) << char(219);
+    setCursorPosition(enemyPos, row + 2);
+    cout << char(219) << "  " << char(219);
+}
+
+void CarG::clearEnemyCar(int row, int enemyPos) {
+    for (int i = 0; i < 3; i++) {
+        setCursorPosition(enemyPos, row + i);
+        cout << "    ";
+    }
+}
+
+void CarG::handleMovement(char inputKey) {
+    switch (inputKey) {
         case 'A':
         case 'a':
-            lmove();
+            moveLeft();
             break;
         case 'D':
         case 'd':
-            rmove();
+            moveRight();
             break;
     }
 }
 
-void CarG::lmove()
-{
-        if(n<=17);
-        else
-        {   cls();  car(-2);    }
+void CarG::moveLeft() {
+    if (playerPos > 17) {
+        clearCar();
+        drawCar(-2);
+    }
 }
 
-void CarG::rmove()
-{
-        if(n>=42);
-        else
-        {   cls();  car(+2);    }
+void CarG::moveRight() {
+    if (playerPos < 42) {
+        clearCar();
+        drawCar(2);
+    }
 }
 
-char CarG::cfun()
-{
-    for(;;)
-    {
-        int x1 = rand() % 30 + 17;
-        int x2 = rand() % 28 + 17;
-        if(x1==x2)
-            x1 = rand() % 31 + 17;
+char CarG::gameLoop() {
+    while (true) {
+        int carPosX = rand() % 30 + 17;
+        int enemyPosX = rand() % 28 + 17;
 
-        for(int i=0;i<=23;i++)
-        {
-            gotoxy(x1,i);
+        if (carPosX == enemyPosX)
+            carPosX = rand() % 31 + 17;
+
+        for (int frameRow = 0; frameRow <= 23; frameRow++) {
+            setCursorPosition(carPosX, frameRow);
             cout << ' ';
-            gotoxy(x1,i+1);
-            cout << cash;
-            if(i==23)
-            {
-                gotoxy(x1,24);
+            setCursorPosition(carPosX, frameRow + 1);
+            cout << cashSymbol;
+
+            if (frameRow == 23) {
+                setCursorPosition(carPosX, 24);
                 cout << ' ';
             }
-            Ecar(i, x2);
-            Sleep(sleep);
-            for(int k=-3;k<=4;k++)
-            for(int j=0;j<=3;j++)
-            if((x2==n+k && i+2==21+j) || (x2==n+k && i+2==22+j) || (x2==n+k && i+2==23+j))
-            {
-                keyp=GameOver();
-                return keyp;
-            }
-            Ecls(i, x2);
-            if(CC)
-            {
-                car(0);
-                points=points+5;
+
+            drawEnemyCar(frameRow, enemyPosX);
+            Sleep(enemySpeed);
+
+            for (int offsetX = -3; offsetX <= 4; offsetX++)
+                for (int offsetY = 0; offsetY <= 3; offsetY++)
+                    if ((enemyPosX == playerPos + offsetX && frameRow + 2 == 21 + offsetY) ||
+                        (enemyPosX == playerPos + offsetX && frameRow + 2 == 22 + offsetY) ||
+                        (enemyPosX == playerPos + offsetX && frameRow + 2 == 23 + offsetY)) {
+                        inputKey = displayGameOver();
+                        return inputKey;
+                    }
+
+            clearEnemyCar(frameRow, enemyPosX);
+
+            if (COLLISION_CHECK) {
+                drawCar(0);
+                score += 5;
                 break;
             }
-            points++;
-            displayscore();
-            if(_kbhit())
-            {
-                keyp=_getch();
-                if(keyp=='a' || keyp == 'A' || keyp=='D' || keyp=='d')
-                {   movement(keyp);  }
-                else if(keyp=='Q' || keyp=='q')
-                {   return keyp;    }
-                else
-                {   continue;   }
+
+            score++;
+            displayScore();
+
+            if (_kbhit()) {
+                inputKey = _getch();
+                if (inputKey == 'a' || inputKey == 'A' || inputKey == 'D' || inputKey == 'd') {
+                    handleMovement(inputKey);
+                } else if (inputKey == 'Q' || inputKey == 'q') {
+                    return inputKey;
+                }
             }
-            if(points%100==0)
-            {
-                if(sleep>25)
-                sleep-=25;
-                else if(sleep>15 && sleep<25)
-                    sleep-=3;
+
+            if (score % 100 == 0) {
+                if (enemySpeed > 25)
+                    enemySpeed -= 25;
+                else if (enemySpeed > 15 && enemySpeed < 25)
+                    enemySpeed -= 3;
             }
         }
     }
 }
 
-void CarG::displayscore()
-{
-    gotoxy(50, 15);
-    cout << "points = "<< points;
+void CarG::displayScore() {
+    setCursorPosition(50, 15);
+    cout << "Score = " << score;
 }
 
-char CarG::GameOver()
-{
-    gotoxy(26,12);
+char CarG::displayGameOver() {
+    setCursorPosition(26, 12);
     cout << "GAME OVER";
-    gotoxy(23,13);
-    cout << "Your Score is : " << points;
-    gotoxy(19,15);
-    cout << "Want To Play Again? Y/N: ";
-    keyp=_getche();
-    if(keyp=='y' || keyp=='Y')
-    {
-        points=0;
-        sleep=175;
-        return keyp;
+    setCursorPosition(23, 13);
+    cout << "Your Score is: " << score;
+    setCursorPosition(19, 15);
+    cout << "Play Again? (Y/N): ";
+    inputKey = _getche();
+
+    if (inputKey == 'y' || inputKey == 'Y') {
+        score = 0;
+        enemySpeed = 175;
+        return inputKey;
+    } else if (inputKey == 'n' || inputKey == 'N') {
+        return 'q';
+    } else {
+        return displayGameOver();
     }
-    else if(keyp=='n' || keyp=='N')
-    {   return 'q'; }
-    else
-    {   GameOver(); }
-    void music(){
-               PlaySound(TEXT("123.wav"), NULL, SND_SYNC);
-               PlaySound(TEXT("all.wav"), NULL, SND_SYNC);
-
-               }
-
 }
- 
+
+void CarG::playMusic() {
+    PlaySound(TEXT("123.wav"), NULL, SND_SYNC);
+    PlaySound(TEXT("all.wav"), NULL, SND_SYNC);
+}
